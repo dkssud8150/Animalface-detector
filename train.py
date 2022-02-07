@@ -28,8 +28,8 @@ data_dir = './data'
 train_datasets = datasets.ImageFolder(os.path.join(data_dir,'train'), transforms_train)
 #test_datasets = datasets.ImageFolder(os.path.join(data_dir,'test'), transforms_test)
 
-train_dataloader = torch.utils.data.DataLoader(train_datasets, batch_size=4, shuffle=True, num_workers=0)
-#test_dataloader = torch.utils.data.DataLoader(test_datasets, batch_size=4, shuffle=True, num_workers=0)
+train_dataloader = torch.utils.data.DataLoader(train_datasets, batch_size=8, shuffle=True, num_workers=0)
+#test_dataloader = torch.utils.data.DataLoader(test_datasets, batch_size=8, shuffle=True, num_workers=0)
 
 print('학습 데이터셋 크기:', len(train_datasets))
 #print('테스트 데이터셋 크기:', len(test_datasets))
@@ -61,7 +61,7 @@ out = torchvision.utils.make_grid(inputs)
 imshow(out, title=[class_names[x] for x in classes])
 
 
-model = models.resnet51(pretrained=True)
+model = models.resnet34(pretrained=True)
 num_features = model.fc.in_features
 # 전이 학습(transfer learning): 모델의 출력 뉴런 수를 3개로 교체하여 마지막 레이어 다시 학습
 
