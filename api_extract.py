@@ -1,10 +1,9 @@
 ''' 분류 모델 API 
 학습된 모델을 다른 사람들이 사용할 수 있도록 api를 만들어 배포 '''
 
-# 테스트용 이미지 다운로드하기
-wget https://img.marieclairekorea.com/2021/12/mck_61c19efd717b4.jpg -O test_image.jpg
-
 from PIL import Image
+
+
 
 image = Image.open('test_image.jpg')
 image = transforms_test(image).unsqueeze(0).to(device)
@@ -20,8 +19,6 @@ with torch.no_grad():
     API 기능 제공을 위해 Flask 프레임워크 사용 '''
 
 # 필요한 라이브러리 설치하기
-!pip install flask-ngrok
-
 import io
 from flask_ngrok import run_with_ngrok
 from flask import Flask, jsonify, request

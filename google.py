@@ -52,20 +52,23 @@ for name in train_namespace:
     images = driver.find_elements(By.CSS_SELECTOR, ".rg_i.Q4LuWd")
 
     # number of images
-    cnt = 1
+    cnt = 0
 
     for img in images:
         try:
+            start = time.time()
             img.click()
-            time.sleep(1)
+            time.sleep(2)
             src = driver.find_element(By.XPATH, "/html/body/div[2]/c-wiz/div[3]/div[2]/div[3]/div/div/div[3]/div[2]/c-wiz/div/div[1]/div[1]/div[2]/div/a/img").get_attribute("src")
+            if start > 1*10^-5:
+                pass
             urllib.request.urlretrieve(src, k + "/" + str(cnt) + ".jpg")
             cnt+=1
-            if cnt == 21:
+            if cnt == 50:
                 print("Finish!")
                 break
         except:
-            pass
+            pass    
 
 driver.close()
 
@@ -112,7 +115,7 @@ for name in test_namespace:
     images = driver.find_elements(By.CSS_SELECTOR, ".rg_i.Q4LuWd")
 
     # number of images
-    cnt = 1
+    cnt = 0
 
     for img in images:
         try:
@@ -121,7 +124,7 @@ for name in test_namespace:
             src = driver.find_element(By.XPATH, "/html/body/div[2]/c-wiz/div[3]/div[2]/div[3]/div/div/div[3]/div[2]/c-wiz/div/div[1]/div[1]/div[2]/div/a/img").get_attribute("src")
             urllib.request.urlretrieve(src, k + "/" + str(cnt) + ".jpg")
             cnt+=1
-            if cnt == 21:
+            if cnt == 20:
                 print("Finish!")
                 break
         except:

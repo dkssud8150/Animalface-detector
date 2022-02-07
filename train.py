@@ -9,6 +9,7 @@ import time
 import os
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+CUDA_LAUNCH_BLOCKING=1
 
 # 데이터셋을 불러올 때 사용할 변형(transformation) 객체 정의
 transforms_train = transforms.Compose([
@@ -29,13 +30,14 @@ train_datasets = datasets.ImageFolder(os.path.join(data_dir,'train'), transforms
 test_datasets = datasets.ImageFolder(os.path.join(data_dir,'test'), transforms_test)
 
 train_dataloader = torch.utils.data.DataLoader(train_datasets, batch_size=8, shuffle=True, num_workers=0)
-test_dataloader = torch.utils.data.DataLoader(test_datasets, batch_size=8, shuffle=True, num_workers=0)
+test_dataloader = torch.utils.data.DataLoader(test_datasets, batch_size=8, shuffle=False, num_workers=0)
 
 print('학습 데이터셋 크기:', len(train_datasets))
 print('테스트 데이터셋 크기:', len(test_datasets))
 
-class_names = train_datasets.classes
-print('클래스:', class_names)
+train_class_names = train_datasets.classes
+test_class_names = test_datasets.classes
+print('학습 클래스:', train_class_names,"\n테스트 클래스",test_class_names)
 
 
 def imshow(input, title):
@@ -58,14 +60,14 @@ iterator = iter(train_dataloader)
 # 현재 배치를 이용해 격자 형태의 이미지를 만들어 시각화
 inputs, classes = next(iterator)
 out = torchvision.utils.make_grid(inputs)
-imshow(out, title=[class_names[x] for x in classes])
+imshow(out, title=[train_class_names[x] for x in classes])
 
 
 model = models.resnet34(pretrained=True)
 num_features = model.fc.in_features
 # 전이 학습(transfer learning): 모델의 출력 뉴런 수를 3개로 교체하여 마지막 레이어 다시 학습
 
-model.fc = nn.Linear(num_features, len(class_names))
+model.fc = nn.Linear(num_features, len(train_class_names))
 model = model.to(device)
 
 criterion = nn.CrossEntropyLoss()
@@ -126,8 +128,8 @@ with torch.no_grad():
         running_corrects += torch.sum(preds == labels.data)
 
         # 한 배치의 첫 번째 이미지에 대하여 결과 시각화
-        print(f'[예측 결과: {class_names[preds[0]]}] (실제 정답: {class_names[labels.data[0]]})')
-        imshow(inputs.cpu().data[0], title='예측 결과: ' + class_names[preds[0]])
+        print(f'[예측 결과: {test_class_names[preds[0]]}] (실제 정답: {test_class_names[labels.data[0]]})')
+        imshow(inputs.cpu().data[0], title='예측 결과: ' + test_class_names[preds[0]])
 
     epoch_loss = running_loss / len(test_datasets)
     epoch_acc = running_corrects / len(test_datasets) * 100.
@@ -143,4 +145,4 @@ with torch.no_grad():
 # with torch.no_grad():
 #     outputs = model(image)
 #     _, preds = torch.max(outputs, 1)
-#     imshow(image.cpu().data[0], title='예측 결과: ' + class_names[preds[0]])
+#     imshow(image.cpu().data[0], title='예측 결과: ' + test_class_names[preds[0]])
