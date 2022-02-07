@@ -26,13 +26,13 @@ transforms_test = transforms.Compose([
 
 data_dir = './data'
 train_datasets = datasets.ImageFolder(os.path.join(data_dir,'train'), transforms_train)
-#test_datasets = datasets.ImageFolder(os.path.join(data_dir,'test'), transforms_test)
+test_datasets = datasets.ImageFolder(os.path.join(data_dir,'test'), transforms_test)
 
 train_dataloader = torch.utils.data.DataLoader(train_datasets, batch_size=8, shuffle=True, num_workers=0)
-#test_dataloader = torch.utils.data.DataLoader(test_datasets, batch_size=8, shuffle=True, num_workers=0)
+test_dataloader = torch.utils.data.DataLoader(test_datasets, batch_size=8, shuffle=True, num_workers=0)
 
 print('학습 데이터셋 크기:', len(train_datasets))
-#print('테스트 데이터셋 크기:', len(test_datasets))
+print('테스트 데이터셋 크기:', len(test_datasets))
 
 class_names = train_datasets.classes
 print('클래스:', class_names)
@@ -107,40 +107,40 @@ for epoch in range(num_epochs):
     print('#{} Loss: {:.4f} Acc: {:.4f}% Time: {:.4f}s'.format(epoch, epoch_loss, epoch_acc, time.time() - start_time))
 
 
-# with torch.no_grad():
-#     model.eval()
-#     start_time = time.time()
-    
-#     running_loss = 0.
-#     running_corrects = 0
-
-#     for inputs, labels in test_dataloader:
-#         inputs = inputs.to(device)
-#         labels = labels.to(device)
-
-#         outputs = model(inputs)
-#         _, preds = torch.max(outputs, 1)
-#         loss = criterion(outputs, labels)
-
-#         running_loss += loss.item() * inputs.size(0)
-#         running_corrects += torch.sum(preds == labels.data)
-
-#         # 한 배치의 첫 번째 이미지에 대하여 결과 시각화
-#         print(f'[예측 결과: {class_names[preds[0]]}] (실제 정답: {class_names[labels.data[0]]})')
-#         imshow(inputs.cpu().data[0], title='예측 결과: ' + class_names[preds[0]])
-
-#     epoch_loss = running_loss / len(test_datasets)
-#     epoch_acc = running_corrects / len(test_datasets) * 100.
-#     print('[Test Phase] Loss: {:.4f} Acc: {:.4f}% Time: {:.4f}s'.format(epoch_loss, epoch_acc, time.time() - start_time))
-
-test_image = r"C:\Users\dkssu\Github\face\data\test\1.jpg"
-
-from PIL import Image
-
-image = Image.open(test_image)
-image = transforms_test(image).unsqueeze(0).to(device)
-
 with torch.no_grad():
-    outputs = model(image)
-    _, preds = torch.max(outputs, 1)
-    imshow(image.cpu().data[0], title='예측 결과: ' + class_names[preds[0]])
+    model.eval()
+    start_time = time.time()
+    
+    running_loss = 0.
+    running_corrects = 0
+
+    for inputs, labels in test_dataloader:
+        inputs = inputs.to(device)
+        labels = labels.to(device)
+
+        outputs = model(inputs)
+        _, preds = torch.max(outputs, 1)
+        loss = criterion(outputs, labels)
+
+        running_loss += loss.item() * inputs.size(0)
+        running_corrects += torch.sum(preds == labels.data)
+
+        # 한 배치의 첫 번째 이미지에 대하여 결과 시각화
+        print(f'[예측 결과: {class_names[preds[0]]}] (실제 정답: {class_names[labels.data[0]]})')
+        imshow(inputs.cpu().data[0], title='예측 결과: ' + class_names[preds[0]])
+
+    epoch_loss = running_loss / len(test_datasets)
+    epoch_acc = running_corrects / len(test_datasets) * 100.
+    print('[Test Phase] Loss: {:.4f} Acc: {:.4f}% Time: {:.4f}s'.format(epoch_loss, epoch_acc, time.time() - start_time))
+
+# test_image = r"C:\Users\dkssu\Github\face\data\test\1.jpg"
+
+# from PIL import Image
+
+# image = Image.open(test_image)
+# image = transforms_test(image).unsqueeze(0).to(device)
+
+# with torch.no_grad():
+#     outputs = model(image)
+#     _, preds = torch.max(outputs, 1)
+#     imshow(image.cpu().data[0], title='예측 결과: ' + class_names[preds[0]])
