@@ -1,18 +1,14 @@
 ''' 분류 모델 API 
 학습된 모델을 다른 사람들이 사용할 수 있도록 api를 만들어 배포 '''
 
+from train import imshow
 from PIL import Image
 
-
-
-image = Image.open('test_image.jpg')
-image = transforms_test(image).unsqueeze(0).to(device)
-
-with torch.no_grad():
-    outputs = model(image)
-    _, preds = torch.max(outputs, 1)
-    imshow(image.cpu().data[0], title='예측 결과: ' + class_names[preds[0]])
-
+transforms_test = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+])
 
 
 '''웹 API 개방을 위해 ngrok 서비스 이용

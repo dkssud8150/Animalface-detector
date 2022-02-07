@@ -3,10 +3,16 @@ import torch.nn as nn
 import torch.optim as optim
 import torchvision
 from torchvision import datasets, models, transforms
+
+import sklearn
+from sklearn.model_selection import train_test_split
+
 import numpy as np
 import matplotlib.pyplot as plt
 import time
 import os
+
+from glob import glob
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 CUDA_LAUNCH_BLOCKING=1
@@ -19,25 +25,26 @@ transforms_train = transforms.Compose([
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]) # 정규화(normalization)
 ])
 
-transforms_test = transforms.Compose([
+transforms_valid = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
 data_dir = './data'
+
+
 train_datasets = datasets.ImageFolder(os.path.join(data_dir,'train'), transforms_train)
-test_datasets = datasets.ImageFolder(os.path.join(data_dir,'test'), transforms_test)
+
 
 train_dataloader = torch.utils.data.DataLoader(train_datasets, batch_size=8, shuffle=True, num_workers=0)
-test_dataloader = torch.utils.data.DataLoader(test_datasets, batch_size=8, shuffle=False, num_workers=0)
+#valid_dataloader = torch.utils.data.DataLoader(valid_datasets, batch_size=8, shuffle=False, num_workers=0)
 
 print('학습 데이터셋 크기:', len(train_datasets))
-print('테스트 데이터셋 크기:', len(test_datasets))
+#print('테스트 데이터셋 크기:', len(valid_datasets))
 
-train_class_names = train_datasets.classes
-test_class_names = test_datasets.classes
-print('학습 클래스:', train_class_names,"\n테스트 클래스",test_class_names)
+class_names = train_datasets.classes
+print('학습 클래스:', class_names)
 
 
 def imshow(input, title):
@@ -60,22 +67,23 @@ iterator = iter(train_dataloader)
 # 현재 배치를 이용해 격자 형태의 이미지를 만들어 시각화
 inputs, classes = next(iterator)
 out = torchvision.utils.make_grid(inputs)
-imshow(out, title=[train_class_names[x] for x in classes])
+imshow(out, title=[class_names[x] for x in classes])
 
 
 model = models.resnet34(pretrained=True)
 num_features = model.fc.in_features
 # 전이 학습(transfer learning): 모델의 출력 뉴런 수를 3개로 교체하여 마지막 레이어 다시 학습
 
-model.fc = nn.Linear(num_features, len(train_class_names))
+model.fc = nn.Linear(num_features, len(class_names))
 model = model.to(device)
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
 
-num_epochs = 20
+num_epochs = 5
 
+''' Train '''
 # 전체 반복(epoch) 수 만큼 반복하며
 for epoch in range(num_epochs):
     model.train()
@@ -109,6 +117,8 @@ for epoch in range(num_epochs):
     print('#{} Loss: {:.4f} Acc: {:.4f}% Time: {:.4f}s'.format(epoch, epoch_loss, epoch_acc, time.time() - start_time))
 
 
+
+''' Valid 
 with torch.no_grad():
     model.eval()
     start_time = time.time()
@@ -116,7 +126,7 @@ with torch.no_grad():
     running_loss = 0.
     running_corrects = 0
 
-    for inputs, labels in test_dataloader:
+    for inputs, labels in valid_dataloader:
         inputs = inputs.to(device)
         labels = labels.to(device)
 
@@ -128,21 +138,36 @@ with torch.no_grad():
         running_corrects += torch.sum(preds == labels.data)
 
         # 한 배치의 첫 번째 이미지에 대하여 결과 시각화
-        print(f'[예측 결과: {test_class_names[preds[0]]}] (실제 정답: {test_class_names[labels.data[0]]})')
-        imshow(inputs.cpu().data[0], title='예측 결과: ' + test_class_names[preds[0]])
+        print(f'[예측 결과: {class_names[preds[0]]}] (실제 정답: {class_names[labels.data[0]]})')
+        imshow(inputs.cpu().data[0], title='예측 결과: ' + class_names[preds[0]])
 
-    epoch_loss = running_loss / len(test_datasets)
-    epoch_acc = running_corrects / len(test_datasets) * 100.
-    print('[Test Phase] Loss: {:.4f} Acc: {:.4f}% Time: {:.4f}s'.format(epoch_loss, epoch_acc, time.time() - start_time))
+    epoch_loss = running_loss / len(valid_datasets)
+    epoch_acc = running_corrects / len(valid_datasets) * 100.
+    print('[valid Phase] Loss: {:.4f} Acc: {:.4f}% Time: {:.4f}s'.format(epoch_loss, epoch_acc, time.time() - start_time)) '''
 
-# test_image = r"C:\Users\dkssu\Github\face\data\test\1.jpg"
 
-# from PIL import Image
 
-# image = Image.open(test_image)
-# image = transforms_test(image).unsqueeze(0).to(device)
 
-# with torch.no_grad():
-#     outputs = model(image)
-#     _, preds = torch.max(outputs, 1)
-#     imshow(image.cpu().data[0], title='예측 결과: ' + test_class_names[preds[0]])
+''' Test '''
+
+valid_images = []
+valid_dir = data_dir + '/test'
+
+val_folders = glob(valid_dir + '/*')
+for val_folder in val_folders:
+    image_paths = glob(val_folder + '/*')
+    for image_path in image_paths:
+        valid_images.append(image_path)
+
+valid_image = valid_images[0]
+print(valid_image, type(valid_image))
+from PIL import Image
+
+image = Image.open(valid_image)
+image = transforms_valid(image).unsqueeze(0).to(device)
+
+with torch.no_grad():
+    outputs = model(image)
+    _, preds = torch.max(outputs, 1)
+    imshow(image.cpu().data[0], title='예측 결과: ' + valid_image.split('/')[-1].split('\\')[1])
+    #imshow(image.cpu().data[0], title='예측 결과: ' + class_names[preds[0]])
