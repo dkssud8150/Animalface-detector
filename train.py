@@ -4,6 +4,7 @@ import torch.optim as optim
 import torchvision
 from torchvision import datasets, models, transforms
 import numpy as np
+import matplotlib.pyplot as plt
 import time
 import os
 
@@ -23,9 +24,9 @@ transforms_test = transforms.Compose([
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
-data_dir = './face/data'
-train_datasets = datasets.ImageFolder(os.path.join(data_dir, 'train'), transforms_train)
-#test_datasets = datasets.ImageFolder(os.path.join(data_dir, 'test'), transforms_test)
+data_dir = './data'
+train_datasets = datasets.ImageFolder(os.path.join(data_dir,'train'), transforms_train)
+#test_datasets = datasets.ImageFolder(os.path.join(data_dir,'test'), transforms_test)
 
 train_dataloader = torch.utils.data.DataLoader(train_datasets, batch_size=4, shuffle=True, num_workers=0)
 #test_dataloader = torch.utils.data.DataLoader(test_datasets, batch_size=4, shuffle=True, num_workers=0)
