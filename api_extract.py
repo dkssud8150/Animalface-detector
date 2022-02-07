@@ -3,6 +3,7 @@
 
 from train import imshow
 from PIL import Image
+from torchvision import transforms
 
 transforms_test = transforms.Compose([
     transforms.Resize((224, 224)),
