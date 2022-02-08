@@ -1,16 +1,17 @@
 ''' 분류 모델 API 
 학습된 모델을 다른 사람들이 사용할 수 있도록 api를 만들어 배포 '''
 
-from train import imshow
 from PIL import Image
+import torch
 from torchvision import transforms
 
 transforms_test = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-])
+    ])
 
+model = torch.load("./weight/model_best_epoch.pt")
 
 '''웹 API 개방을 위해 ngrok 서비스 이용
     API 기능 제공을 위해 Flask 프레임워크 사용 '''
@@ -29,13 +30,25 @@ def get_prediction(image_bytes):
     with torch.no_grad():
         outputs = model(image)
         _, preds = torch.max(outputs, 1)
-        imshow(image.cpu().data[0], title='예측 결과: ' + class_names[preds[0]])
+        
+        input = image.cpu().data[0]
+        input = input.numpy().transpose((1, 2, 0))
+        # 이미지 정규화 해제하기
+        mean = np.array([0.485, 0.456, 0.406])
+        std = np.array([0.229, 0.224, 0.225])
+        input = std * input + mean
+        input = np.clip(input, 0, 1)
+        # 이미지 출력
+        plt.imshow(input)
+        plt.title('예측 결과: ' + class_names[preds[0]])
+        plt.show()
 
     return class_names[preds[0]]
 
 
-app = Flask(__name__)
 
+app = Flask(__name__)
+run_with_ngrok(app)
 
 @app.route('/', methods=['POST'])
 def predict():
@@ -49,8 +62,8 @@ def predict():
         print("결과:", {'class_name': class_name})
         return jsonify({'class_name': class_name})
 
-run_with_ngrok(app)
-app.run()
+if __name__ == "__main__":
+    app.run()
 
 
 ## 사용 방식
