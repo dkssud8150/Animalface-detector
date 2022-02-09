@@ -19,6 +19,7 @@ for name in train_namespace:
 
     # solving chrome error
     options = webdriver.ChromeOptions()
+    options.add_argument('headless')
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     
     # chrome excute
@@ -31,23 +32,23 @@ for name in train_namespace:
 
 
     # Get scroll height
-    last_height = driver.execute_script("return document.body.scrollHeight")
+    # last_height = driver.execute_script("return document.body.scrollHeight")
 
-    while True:
-        # Scroll down to bottom
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    # while True:
+    #     # Scroll down to bottom
+    #     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-        # Wait to load page
-        time.sleep(1)
+    #     # Wait to load page
+    #     time.sleep(1)
 
-        # Calculate new scroll height and compare with last scroll height
-        new_height = driver.execute_script("return document.body.scrollHeight")
-        if new_height == last_height:
-            try:
-                driver.find_element(By.CSS_SELECTOR, ".mye4qd").click()
-            except:
-                break
-        last_height = new_height
+    #     # Calculate new scroll height and compare with last scroll height
+    #     new_height = driver.execute_script("return document.body.scrollHeight")
+    #     if new_height == last_height:
+    #         try:
+    #             driver.find_element(By.CSS_SELECTOR, ".mye4qd").click()
+    #         except:
+    #             break
+    #     last_height = new_height
 
     images = driver.find_elements(By.CSS_SELECTOR, ".rg_i.Q4LuWd")
 
@@ -55,25 +56,29 @@ for name in train_namespace:
     cnt = 0
 
     for img in images:
-        try:
-            start = time.time()
-            img.click()
-            time.sleep(2)
-            src = driver.find_element(By.XPATH, "/html/body/div[2]/c-wiz/div[3]/div[2]/div[3]/div/div/div[3]/div[2]/c-wiz/div/div[1]/div[1]/div[2]/div/a/img").get_attribute("src")
-            if start > 1*10^-5:
-                pass
-            urllib.request.urlretrieve(src, k + "/" + str(cnt) + ".jpg")
-            cnt+=1
-            if cnt == 50:
-                print("Finish!")
-                break
-        except:
-            pass    
+        if not os.path.isfile(k + "/" + str(cnt) + ".jpg"):
+            try:
+                start = time.time()
+                img.click()
+                time.sleep(2)
+                src = driver.find_element(By.XPATH, "/html/body/div[2]/c-wiz/div[3]/div[2]/div[3]/div/div/div[3]/div[2]/c-wiz/div/div[1]/div[1]/div[2]/div/a/img").get_attribute("src")
+                if start > 1*10^-5: pass
+                urllib.request.urlretrieve(src, k + "/" + str(cnt) + ".jpg")
+                cnt+=1
+                if cnt == 1:
+                    print(name," Finish!")
+                    break
+            except:
+                print("Do Not this")
+                pass    
+        else: 
+            print("Exists already")
+            pass
 
-driver.close()
+    driver.close() 
 
 
-
+print("\nTest image download\n")
 
 for name in test_namespace:
     # make fold
@@ -82,6 +87,7 @@ for name in test_namespace:
 
     # solving chrome error
     options = webdriver.ChromeOptions()
+    options.add_argument('headless')
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     
     # chrome excute
@@ -94,23 +100,23 @@ for name in test_namespace:
 
 
     # Get scroll height
-    last_height = driver.execute_script("return document.body.scrollHeight")
+    # last_height = driver.execute_script("return document.body.scrollHeight")
 
-    while True:
-        # Scroll down to bottom
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    # while True:
+    #     # Scroll down to bottom
+    #     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-        # Wait to load page
-        time.sleep(1)
+    #     # Wait to load page
+    #     time.sleep(1)
 
-        # Calculate new scroll height and compare with last scroll height
-        new_height = driver.execute_script("return document.body.scrollHeight")
-        if new_height == last_height:
-            try:
-                driver.find_element(By.CSS_SELECTOR, ".mye4qd").click()
-            except:
-                break
-        last_height = new_height
+    #     # Calculate new scroll height and compare with last scroll height
+    #     new_height = driver.execute_script("return document.body.scrollHeight")
+    #     if new_height == last_height:
+    #         try:
+    #             driver.find_element(By.CSS_SELECTOR, ".mye4qd").click()
+    #         except:
+    #             break
+    #     last_height = new_height
 
     images = driver.find_elements(By.CSS_SELECTOR, ".rg_i.Q4LuWd")
 
@@ -118,16 +124,25 @@ for name in test_namespace:
     cnt = 0
 
     for img in images:
-        try:
-            img.click()
-            time.sleep(2)
-            src = driver.find_element(By.XPATH, "/html/body/div[2]/c-wiz/div[3]/div[2]/div[3]/div/div/div[3]/div[2]/c-wiz/div/div[1]/div[1]/div[2]/div/a/img").get_attribute("src")
-            urllib.request.urlretrieve(src, k + "/" + str(cnt) + ".jpg")
-            cnt+=1
-            if cnt == 20:
-                print("Finish!")
-                break
-        except:
+        if not os.path.isfile(k + "/" + str(cnt) + ".jpg"):
+            try:
+                start = time.time()
+                img.click()
+                time.sleep(2)
+                src = driver.find_element(By.XPATH, "/html/body/div[2]/c-wiz/div[3]/div[2]/div[3]/div/div/div[3]/div[2]/c-wiz/div/div[1]/div[1]/div[2]/div/a/img").get_attribute("src")
+                if start > 1*10^-5: pass
+                urllib.request.urlretrieve(src, k + "/" + str(cnt) + ".jpg")
+                cnt+=1
+                if cnt == 1:
+                    print(name," Finish!")
+                    break
+            except:
+                print("Do Not this")
+                pass    
+        else: 
+            print("Exists already")
             pass
 
-driver.close()
+    driver.close()
+
+driver.quit()
