@@ -32,23 +32,23 @@ for name in train_namespace:
 
 
     # Get scroll height
-    # last_height = driver.execute_script("return document.body.scrollHeight")
+    last_height = driver.execute_script("return document.body.scrollHeight")
 
-    # while True:
-    #     # Scroll down to bottom
-    #     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    while True:
+        # Scroll down to bottom
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-    #     # Wait to load page
-    #     time.sleep(1)
+        # Wait to load page
+        time.sleep(1)
 
-    #     # Calculate new scroll height and compare with last scroll height
-    #     new_height = driver.execute_script("return document.body.scrollHeight")
-    #     if new_height == last_height:
-    #         try:
-    #             driver.find_element(By.CSS_SELECTOR, ".mye4qd").click()
-    #         except:
-    #             break
-    #     last_height = new_height
+        # Calculate new scroll height and compare with last scroll height
+        new_height = driver.execute_script("return document.body.scrollHeight")
+        if new_height == last_height:
+            try:
+                driver.find_element(By.CSS_SELECTOR, ".mye4qd").click()
+            except:
+                break
+        last_height = new_height
 
     images = driver.find_elements(By.CSS_SELECTOR, ".rg_i.Q4LuWd")
 
@@ -73,10 +73,9 @@ for name in train_namespace:
                 pass    
         else: 
             print("Exists already")
-            break
+            pass
 
-    driver.close() 
-
+driver.quit()
 
 print("\nTest image download\n")
 
@@ -100,23 +99,23 @@ for name in test_namespace:
 
 
     # Get scroll height
-    # last_height = driver.execute_script("return document.body.scrollHeight")
+    last_height = driver.execute_script("return document.body.scrollHeight")
 
-    # while True:
-    #     # Scroll down to bottom
-    #     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    while True:
+        # Scroll down to bottom
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-    #     # Wait to load page
-    #     time.sleep(1)
+        # Wait to load page
+        time.sleep(1)
 
-    #     # Calculate new scroll height and compare with last scroll height
-    #     new_height = driver.execute_script("return document.body.scrollHeight")
-    #     if new_height == last_height:
-    #         try:
-    #             driver.find_element(By.CSS_SELECTOR, ".mye4qd").click()
-    #         except:
-    #             break
-    #     last_height = new_height
+        # Calculate new scroll height and compare with last scroll height
+        new_height = driver.execute_script("return document.body.scrollHeight")
+        if new_height == last_height:
+            try:
+                driver.find_element(By.CSS_SELECTOR, ".mye4qd").click()
+            except:
+                break
+        last_height = new_height
 
     images = driver.find_elements(By.CSS_SELECTOR, ".rg_i.Q4LuWd")
 
@@ -141,8 +140,6 @@ for name in test_namespace:
                 pass    
         else: 
             print("Exists already")
-            break
-
-    driver.close()
+            pass
 
 driver.quit()

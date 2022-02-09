@@ -71,3 +71,6 @@ if __name__ == "__main__":
 
 ## 사용 예시
 # curl -X POST -F file=@dongseok.jpg http://c4cdb8de3a35.ngrok.io/
+
+# 참고
+# https://velog.io/@qsdcfd/%EC%9B%B9-%ED%8E%98%EC%9D%B4%EC%A7%80-%EB%A7%8C%EB%93%A4%EA%B8%B0

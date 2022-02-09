@@ -14,8 +14,23 @@ import os
 
 from glob import glob
 
+import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+
+# print(fm.findSystemFonts(fontpaths=None, fontext='ttf'))
+
+# 한글 폰트 설정하기
+fontpath = 'C:/Windows/Fonts/NanumGothicLight.ttf'
+font = fm.FontProperties(fname=fontpath, size=10).get_name()
+plt.rc('font', family=font)
+
+
+# use GPU
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-CUDA_LAUNCH_BLOCKING=1
+print(device)
+#CUDA_LAUNCH_BLOCKING=1
+
 
 # 데이터셋을 불러올 때 사용할 변형(transformation) 객체 정의
 transforms_train = transforms.Compose([
@@ -35,7 +50,6 @@ data_dir = './data'
 
 train_datasets = datasets.ImageFolder(os.path.join(data_dir,'train'), transforms_train)
 
-
 train_dataloader = torch.utils.data.DataLoader(train_datasets, batch_size=4, shuffle=True, num_workers=0)
 #valid_dataloader = torch.utils.data.DataLoader(valid_datasets, batch_size=4, shuffle=False, num_workers=0)
 
@@ -44,6 +58,7 @@ print('학습 데이터셋 크기:', len(train_datasets))
 
 class_names = train_datasets.classes
 print('학습 클래스:', class_names)
+
 
 
 def imshow(input, title):
@@ -60,6 +75,7 @@ def imshow(input, title):
     plt.show()
 
 
+
 # 학습 데이터를 배치 단위로 불러오기
 iterator = iter(train_dataloader)
 # 현재 배치를 이용해 격자 형태의 이미지를 만들어 시각화
@@ -68,6 +84,7 @@ out = torchvision.utils.make_grid(inputs)
 # imshow(out, title=[class_names[x] for x in classes])
 
 
+# implement model
 model = models.resnet34(pretrained=True)
 num_features = model.fc.in_features
 
@@ -165,18 +182,19 @@ for val_folder in val_folders:
     image_paths = glob(val_folder + '/*')
     for image_path in image_paths: valid_images.append(image_path)
 
+
 import random
 num = random.randint(0,len(valid_images)-1)
-valid_image = data_dir + '/2.jpg' #= valid_images[num]
+valid_image = valid_images[num]
+
 
 from PIL import Image
-
 image = Image.open(valid_image)
 image = transforms_test(image).unsqueeze(0).to(device)
+
 
 with torch.no_grad():
     outputs = model(image)
     _, preds = torch.max(outputs, 1)
-    print(preds[0])
-    imshow(image.cpu().data[0], title='result : ' + class_names[preds[0]])
+    imshow(image.cpu().data[0], title=' 학습 결과 : ' + class_names[preds[0]])
 
