@@ -36,8 +36,8 @@ data_dir = './data'
 train_datasets = datasets.ImageFolder(os.path.join(data_dir,'train'), transforms_train)
 
 
-train_dataloader = torch.utils.data.DataLoader(train_datasets, batch_size=8, shuffle=True, num_workers=0)
-#valid_dataloader = torch.utils.data.DataLoader(valid_datasets, batch_size=8, shuffle=False, num_workers=0)
+train_dataloader = torch.utils.data.DataLoader(train_datasets, batch_size=4, shuffle=True, num_workers=0)
+#valid_dataloader = torch.utils.data.DataLoader(valid_datasets, batch_size=4, shuffle=False, num_workers=0)
 
 print('학습 데이터셋 크기:', len(train_datasets))
 #print('테스트 데이터셋 크기:', len(valid_datasets))

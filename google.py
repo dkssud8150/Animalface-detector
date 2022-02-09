@@ -65,7 +65,7 @@ for name in train_namespace:
                 if start > 1*10^-5: pass
                 urllib.request.urlretrieve(src, k + "/" + str(cnt) + ".jpg")
                 cnt+=1
-                if cnt == 1:
+                if cnt == 50:
                     print(name," Finish!")
                     break
             except:
@@ -73,7 +73,7 @@ for name in train_namespace:
                 pass    
         else: 
             print("Exists already")
-            pass
+            break
 
     driver.close() 
 
@@ -133,7 +133,7 @@ for name in test_namespace:
                 if start > 1*10^-5: pass
                 urllib.request.urlretrieve(src, k + "/" + str(cnt) + ".jpg")
                 cnt+=1
-                if cnt == 1:
+                if cnt == 20:
                     print(name," Finish!")
                     break
             except:
@@ -141,7 +141,7 @@ for name in test_namespace:
                 pass    
         else: 
             print("Exists already")
-            pass
+            break
 
     driver.close()
 
