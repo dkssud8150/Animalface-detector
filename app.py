@@ -98,7 +98,7 @@ def upload_image_file():
         for train_path in train_paths: class_images.append(train_path)
 
         import random
-        num = random.randint(0,len(class_images)-1)
+        num = random.randint(0,10)
         img_path = class_images[num]
 
         pr_image = Image.open(img_path)
