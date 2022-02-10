@@ -94,7 +94,7 @@ def upload_image_file():
         # 예측된 클래스에 대한 무작위 사진 가져오기
         class_images = []
         class_dir = './data/train/' + class_name
-        train_paths = glob(class_dir + '/*')
+        train_paths = sorted(glob(class_dir + '/*'),key= lambda x: x.split("\\")[-1].split('.')[0])
         for train_path in train_paths: class_images.append(train_path)
 
         import random
