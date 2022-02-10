@@ -5,6 +5,7 @@
   <meta charset = "UTF-8">
   <title> main page </title>
 <body>
+  <!--
   <h1>Site URL</h1>
   <form action = "/test" method = "POST">
     <a href="../test">GET test</a> 
@@ -14,19 +15,38 @@
   <a href="../upload_image">upload_image</a>
     
   <br>
+  -->
     
   <form action = "/upload_image" method = "POST" enctype = "multipart/form-data">
     <h2>이미지 업로드 하기</h2>
-
-    <input type="file" name="uploaded_image">
-
-    <button>이미지 업로드</button>
     
-    {% if file %}
-    <span>
-        {{ file }}
-    </span>
-    {% endif %}
+    <div>
+    
+    <label for="file">Choose file to upload</label>
+    <input type="file" name="uploaded_image" id="uploaded_image" accept="image/*" required="True" value="업로드">
+    <br>
+    <img src="no" id="img_section" style="width: 400px; height: 400px;">
+    
+    <script>
+        const reader = new FileReader();
+
+        reader.onload = (readerEvent) => {
+            document.querySelector("#img_section").setAttribute("src", readerEvent.target.result);
+            //파일을 읽는 이벤트가 발생하면 img_section의 src 속성을 readerEvent의 결과물로 대체함
+        };
+
+        document.querySelector("#uploaded_image").addEventListener("change", (changeEvent) => {
+            //upload_file 에 이벤트리스너를 장착
+
+            const imgFile = changeEvent.target.files[0];
+            reader.readAsDataURL(imgFile);
+            //업로드한 이미지의 URL을 reader에 등록
+        })
+    </script>
+    
+    <button>이미지 업로드</button>
+
+  </div>
 </form>
 </body>
 </head>

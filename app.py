@@ -11,6 +11,7 @@ from torchvision import datasets, models, transforms
 import os
 import matplotlib
 import matplotlib.font_manager as fm
+from glob import glob
 
 # print(fm.findSystemFonts(fontpaths=None, fontext='ttf'))
 
@@ -54,24 +55,12 @@ def get_prediction(image_bytes):
 
     with torch.no_grad():
         outputs = model(image)
-        _, preds = torch.max(outputs, 1)
-        
-        input = image.cpu().data[0]
-        input = input.numpy().transpose((1, 2, 0))
-        # 이미지 정규화 해제하기
-        mean = np.array([0.485, 0.456, 0.406])
-        std = np.array([0.229, 0.224, 0.225])
-        input = std * input + mean
-        input = np.clip(input, 0, 1)
-        # 이미지 출력
-        plt.imshow(input)
-        plt.title('예측 결과: ' + class_names[preds[0]])
-        plt.show()
+        outputs = torch.exp(outputs)
+        topk, topclass = outputs.topk(3, dim=1) # argmax와 비슷하게 top-k에 대한 결과 값을 받는다.
+    
+        classes = [class_names[i] for i in topclass.cpu().numpy()[0]]
 
-    return class_names[preds[0]]
-
-
-
+    return classes
 
 
 
@@ -92,16 +81,35 @@ def hello():
 def upload_image_file():
     if request.method == 'POST':
         file = request.files['uploaded_image']
-        
         if not file: return "No Files"
-        file = file.read()
+        image_bytes = file.read()
+        
+        up_image = Image.open(io.BytesIO(image_bytes))
+        up_image.save("./static/img.jpg","jpeg")
 
         # 분류 결과 확인 및 클라이언트에게 결과 반환
-        class_name = get_prediction(image_bytes=file)
+        classes = get_prediction(image_bytes=image_bytes)
+        class_name = classes[0]
+
+        # 예측된 클래스에 대한 무작위 사진 가져오기
+        class_images = []
+        class_dir = './data/train/' + class_name
+        train_paths = glob(class_dir + '/*')
+        for train_path in train_paths: class_images.append(train_path)
+
+        import random
+        num = random.randint(0,len(class_images)-1)
+        img_path = class_images[num]
+
+        pr_image = Image.open(img_path)
+        pr_image.save("./static/" + class_name + ".jpg","jpeg")
+        
+
+
         # print("결과:", {'class_name': class_name})
-        return jsonify({"class_name": class_name}) 
+        return render_template('upload.html', classes = classes, label = class_name, upload_img = 'img.jpg', predict_img = class_name + '.jpg') 
     else:
-        return jsonify({"Methods : ":request.method})
+        return jsonify({"Methods == ":request.method})
     
 
 

@@ -1,20 +1,40 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title> main page </title>
+    <title> upload page </title>
   </head>
   <body>
 
+    <label for="label">예측 결과 : </label>
     {% if label %} 
       <span>
         {{ label }}
       </span> 
+      <table border="1">
+      <th>업로드 이미지</th>
+      <th>예측 결과</th>
+      <tr><!-- 첫번째 줄 시작 -->
+        <td>
+          <img src="{{ url_for('static',filename = upload_img)}}" alt="업로드 이미지" width="400px" height="400px">
+        </td>
+        <td>
+          <img src="{{ url_for('static',filename = predict_img)}}" alt="예측 이미지" width="400px" height="400px">
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {% if classes %}
+            <a>
+              <fir>1위: {{ classes[0] }}</fir><br>
+              <sec>2위: {{ classes[1] }}</sec><br>
+              <thi>3위: {{ classes[2] }}</thi><br>
+            </a>
+          {% endif %}
+        </td>
+      </tr>
+      </table>
+
     {% endif %}
-    
-    {% if result %} 
-      <span>
-        {{ result }}
-      </span> 
-    {% endif %}
+    <br>
   </body>
 </html>
