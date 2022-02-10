@@ -18,8 +18,6 @@ model = torch.load("./weight/model_best_epoch.pt")
 
 # 필요한 라이브러리 설치하기
 import io
-from flask_ngrok import run_with_ngrok
-from flask import Flask, jsonify, request
 
 
 # 이미지를 읽어 결과를 반환하는 함수
@@ -47,21 +45,45 @@ def get_prediction(image_bytes):
 
 
 
+
+
+
+from flask_ngrok import run_with_ngrok
+from flask import Flask, jsonify, request, render_template
+from flask import jsonify
+
 app = Flask(__name__)
 run_with_ngrok(app)
 
-@app.route('/', methods=['POST'])
-def predict():
+@app.route('/')
+def hello():
+    return render_template('index.html', label = "pleases click")
+
+
+@app.route('/test', methods=['GET','POST'])
+def testing():
     if request.method == 'POST':
-        # 이미지 바이트 데이터 받아오기
-        file = request.files['file']
+        result = request.form
+        return render_template('test.html',label = result)
+    else:
+        return jsonify({"never die":request.method})
+
+
+@app.route('/upload_image', methods=['GET','POST'])
+def upload_image_file():
+    if request.method == 'POST':
+        file = request.files['uploaded_image']
+        if not file: return render_template('upload.html', label="No Files")
+
         image_bytes = file.read()
 
         # 분류 결과 확인 및 클라이언트에게 결과 반환
         class_name = get_prediction(image_bytes=image_bytes)
         print("결과:", {'class_name': class_name})
-        return jsonify({'class_name': class_name})
-
+        return render_template('upload.html', label=class_name)
+    else:
+        return jsonify({"class_name":request.method})
+    
 if __name__ == "__main__":
     app.run()
 
