@@ -3,19 +3,30 @@
 
 <head>
   <meta charset = "UTF-8">
-  <title> DALENT </title>
+  <title> main page </title>
 <body>
-  <form action = "/" method = "POST">
-    <h1>이미지 불러오기</h1>
-    <a href="../test">testing</a><br>
-    <a href="../upload_image">upload_image</a>
-    <br>
-    {% if label %}
-        <span>
-            {{ label }}
-        </span>
+  <h1>Site URL</h1>
+  <form action = "/test" method = "POST">
+    <a href="../test">GET URL</a>
+    
+    <button>POST BUTTON</button><br>
+  </form>
+  <a href="../upload_image">upload_image</a>
+    
+  <br>
+    
+  <form action = "/upload_image" method = "POST">
+    <h2>이미지 업로드 하기</h2>
+
+    <input type="file" name="uploaded_image">
+
+    <button>이미지 업로드</button>
+    
+    {% if file %}
+    <span>
+        {{ file }}
+    </span>
     {% endif %}
-  </a>
 </form>
 </body>
 </head>

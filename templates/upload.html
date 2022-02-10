@@ -1,25 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
-
-
-<head>
-  <meta charset = "UTF-8">
-  <title> DALENT </title>
+<html>
   <body>
-    <form action="/upload_image" method="POST" enctype="multipart/form-data">
-      <h1>이미지 업로드 하기</h1>
 
-      <button>이미지 업로드</button>
-      <input type="file" name="uploaded_image">
-
-      {% if label %}
-        <span>
-            {{ label }}
-        </span>
-      {% endif %}
-    </form>
+    {% if label %} 
+      <span>
+        {{ label }}
+      </span> 
+    {% endif %}
+    
+    {% if result %} 
+      <span>
+        {{ result }}
+      </span> 
+    {% endif %}
   </body>
-</head>
 </html>
-
-어떻게 포스트로 넘기는가
