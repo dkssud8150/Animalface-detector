@@ -10,11 +10,16 @@
 
 # Install Datset
 
-i'll image crawling in google for about 10 celebrities and save in each fold. 
-i chose 5 korean celeb,"송민호","차은우","이동욱","아이유","한효주" , 
+i'll do **image-crawling** in google for 5 animals and save in each fold(./data/train).
+
+and, i try download image for 10 celebrites as samples to test my Architecture.
+
+i chose 5 korean celeb,"송민호","차은우","이동욱","아이유","한효주" ,<br>
 and 5 abroad celeb, "Angelina Jolie", "Keanu Reeves", "Mark Ruffalo", "Elon Musk", "Robert Pattinson"
 
-+ 추가사항: arg를 통해 baseurl 받도록 설정
+```markdown
++ 추가사항: arg를 통해 baseurl 받도록 설정할 예정
+```
 
 
 
