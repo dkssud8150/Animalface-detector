@@ -89,12 +89,18 @@ model = models.resnet34(pretrained=True)
 num_features = model.fc.in_features
 
 # transfer learning
-model.fc = nn.Linear(num_features, len(class_names))
-model = model.to(device)
+model.fc = nn.Sequential(     
+    nn.Linear(num_features, 256),        # 마지막 완전히 연결된 계층에 대한 입력은 선형 계층, 256개의 출력값을 가짐
+    nn.ReLU(),
+    nn.Dropout(0.4),
+    nn.Linear(256, num_features),      # Since 10 possible outputs = 10 classes
+    nn.LogSoftmax(dim=1)              # For using NLLLoss()
+)
 
-criterion = nn.CrossEntropyLoss()
+criterion = nn.NLLLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9, weight_decay=1e-5)
 
+model = model.to(device)
 
 num_epochs = 30
 
